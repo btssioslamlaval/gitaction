@@ -7,12 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Bonjour !"
-      
-  test:
+
+  test-php:
     runs-on: ubuntu-latest
-
     steps:
-
       - uses: actions/checkout@v4
 
       - name: Installer PHP
@@ -22,3 +20,6 @@ jobs:
 
       - name: Vérifier la version PHP
         run: php -v
+
+      - name: Lancer index.php (CLI)
+        run: php index.php
