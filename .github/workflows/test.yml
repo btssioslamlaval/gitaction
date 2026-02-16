@@ -1,9 +1,18 @@
-name: Test simple
+name: Test PHP simple
 
 on: push
 
 jobs:
-  dire-bonjour:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "Bonjour !"
+      - uses: actions/checkout@v4
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Vérifier la version PHP
+        run: php -v
