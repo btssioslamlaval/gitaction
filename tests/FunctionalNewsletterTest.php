@@ -11,7 +11,7 @@ final class FunctionalNewsletterTest extends TestCase
 
     protected function setUp(): void
     {
-        $seleniumUrl = getenv('SELENIUM_URL') ?: 'http://localhost:4444';
+        $seleniumUrl = $_ENV['SELENIUM_URL'] ?: 'http://localhost:4444';
         $this->driver = RemoteWebDriver::create(
             $seleniumUrl,
             DesiredCapabilities::chrome()
@@ -27,7 +27,7 @@ final class FunctionalNewsletterTest extends TestCase
 
     public function testNewsletterAcceptsAdultWithValidEmail(): void
     {
-        $appUrl = getenv('APP_URL') ?: 'http://host.docker.internal:8000';
+        $appUrl = $_ENV['APP_URL'] ?: 'http://host.docker.internal:8000';
 
         $this->driver->get($appUrl);
 
