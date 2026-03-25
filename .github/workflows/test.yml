@@ -23,3 +23,9 @@ jobs:
 
       - name: Lancer index.php (CLI)
         run: php index.php
+    
+      - name: Installer dépendances
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Lancer les tests
+        run: composer run test
