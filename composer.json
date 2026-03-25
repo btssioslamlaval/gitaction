@@ -8,7 +8,7 @@
 
   },
   "autoload": {
-    "files": ["src/Newsletter.php"]
+    "files": ["src/newsletter.php"]
   },
   "scripts": {
     "test": "phpunit"
