@@ -32,14 +32,15 @@ jobs:
             selenium/standalone-chrome
           echo "Selenium lancé avec --network host"
 
-      - name: Attendre Selenium
+      - name: Lancer Selenium
         run: |
-          echo "Attente Selenium..."
-          until curl -s http://localhost:4444 > /dev/null; do
-            echo "pas encore prêt..."
-            sleep 2
-          done
-          echo "✅ Selenium est prêt !"
+          docker run -d \
+            --name selenium \
+            --network host \
+            --shm-size=2gb \
+            -e SE_NODE_HOST=127.0.0.1 \
+            selenium/standalone-chrome
+          echo "Selenium lancé avec --network host"
 
       - name: 🔍 Vérifier Selenium
         run: curl -s http://localhost:4444/status
