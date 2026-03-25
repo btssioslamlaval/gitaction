@@ -33,4 +33,9 @@ jobs:
         run: until curl -s http://localhost:4444 > /dev/null; do sleep 2; done
 
       - name: Lancer les tests
+        env:
+          # ✅ L'URL correcte pour selenium/standalone-chrome récent
+          SELENIUM_URL: http://localhost:4444/wd/hub
+          # ✅ Sur Linux, 172.17.0.1 est l'IP de la machine hôte vue depuis Docker
+          APP_URL: http://172.17.0.1:8000
         run: composer run test
