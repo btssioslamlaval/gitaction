@@ -8,6 +8,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      selenium:
+        image: selenium/standalone-chrome
+        ports:
+          - 4444:4444
+        options: --shm-size=2gb
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,30 +27,34 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Lancer le serveur PHP
-        run: php -S 0.0.0.0:8000 -t . > /dev/null 2>&1 &
+        run: php -S 127.0.0.1:8000 -t . > /dev/null 2>&1 &
 
-      # ✅ Selenium lancé directement comme processus, pas comme service Docker
-      - name: Lancer Selenium
+      - name: Attendre Selenium (max 60s)
         run: |
-          docker run -d \
-            --name selenium \
-            --network host \
-            --shm-size=2gb \
-            selenium/standalone-chrome
-          echo "Selenium lancé avec --network host"
+          echo "Attente de Selenium sur le port 4444..."
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:4444 > /dev/null 2>&1; then
+              echo "✅ Selenium répond !"
+              break
+            fi
+            echo "⏳ Tentative $i/30..."
+            sleep 2
+          done
 
-      - name: Lancer Selenium
+      - name: 🔍 Vérifier que le port 4444 est ouvert
         run: |
-          docker rm -f selenium 2>/dev/null || true
-          docker run -d \
-            --name selenium \
-            --network host \
-            --shm-size=2gb \
-            -e SE_NODE_HOST=127.0.0.1 \
-            selenium/standalone-chrome
+          echo "--- Ports ouverts ---"
+          ss -tlnp | grep 4444 || echo "❌ Port 4444 non trouvé !"
 
-      - name: 🔍 Vérifier Selenium
-        run: curl -s http://localhost:4444/status
+      - name: 🔍 Vérifier la réponse de Selenium
+        run: |
+          echo "--- Réponse HTTP de Selenium ---"
+          curl -v http://localhost:4444 2>&1 || echo "❌ Pas de réponse"
+
+      - name: 🔍 Vérifier les conteneurs Docker actifs
+        run: |
+          echo "--- Conteneurs en cours ---"
+          docker ps
 
       - name: Lancer les tests
         run: composer run test
