@@ -11,7 +11,7 @@ final class FunctionalNewsletterTest extends TestCase
     protected function setUp(): void
     {
         $this->driver = RemoteWebDriver::create(
-            'http://localhost:4444/wd/hub',
+            'http://selenuim:4444/wd/hub',
             DesiredCapabilities::chrome()
         );
     }
