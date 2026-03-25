@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -10,8 +11,9 @@ final class FunctionalNewsletterTest extends TestCase
 
     protected function setUp(): void
     {
+        $seleniumUrl = getenv('SELENIUM_URL') ?: 'http://localhost:4444';
         $this->driver = RemoteWebDriver::create(
-            'http://localhost:4444',
+            $seleniumUrl,
             DesiredCapabilities::chrome()
         );
     }
@@ -25,7 +27,9 @@ final class FunctionalNewsletterTest extends TestCase
 
     public function testNewsletterAcceptsAdultWithValidEmail(): void
     {
-        $this->driver->get("http://host.docker.internal:8000");
+        $appUrl = getenv('APP_URL') ?: 'http://host.docker.internal:8000';
+
+        $this->driver->get($appUrl);
 
         $this->driver->findElement(WebDriverBy::id('age'))->sendKeys("20");
         $this->driver->findElement(WebDriverBy::id('email'))->sendKeys("test@test.com");
