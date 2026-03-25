@@ -34,13 +34,13 @@ jobs:
 
       - name: Lancer Selenium
         run: |
+          docker rm -f selenium 2>/dev/null || true
           docker run -d \
             --name selenium \
             --network host \
             --shm-size=2gb \
             -e SE_NODE_HOST=127.0.0.1 \
             selenium/standalone-chrome
-          echo "Selenium lancé avec --network host"
 
       - name: 🔍 Vérifier Selenium
         run: curl -s http://localhost:4444/status
