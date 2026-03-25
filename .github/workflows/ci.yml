@@ -8,15 +8,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      selenium:
-        image: selenium/standalone-chrome
-        ports:
-          - 4444:4444
-        options: >-
-          --shm-size=2gb
-          --add-host=host.docker.internal:host-gateway
-
     steps:
       - uses: actions/checkout@v4
 
@@ -31,19 +22,27 @@ jobs:
       - name: Lancer le serveur PHP
         run: php -S 0.0.0.0:8000 -t . > /dev/null 2>&1 &
 
-      - name: Attendre Selenium
-        run: until curl -s http://localhost:4444 > /dev/null; do sleep 2; done
-
-      - name: 🔍 Tester les URLs Selenium
+      # ✅ Selenium lancé directement comme processus, pas comme service Docker
+      - name: Lancer Selenium
         run: |
-          echo "=== Test http://localhost:4444 ==="
-          curl -s http://localhost:4444 | head -c 200
-          echo ""
-          echo "=== Test http://localhost:4444/wd/hub/status ==="
-          curl -s http://localhost:4444/wd/hub/status | head -c 200
-          echo ""
-          echo "=== Test http://localhost:4444/status ==="
-          curl -s http://localhost:4444/status | head -c 200
+          docker run -d \
+            --name selenium \
+            --network host \
+            --shm-size=2gb \
+            selenium/standalone-chrome
+          echo "Selenium lancé avec --network host"
+
+      - name: Attendre Selenium
+        run: |
+          echo "Attente Selenium..."
+          until curl -s http://localhost:4444 > /dev/null; do
+            echo "pas encore prêt..."
+            sleep 2
+          done
+          echo "✅ Selenium est prêt !"
+
+      - name: 🔍 Vérifier Selenium
+        run: curl -s http://localhost:4444/status
 
       - name: Lancer les tests
-        run: SELENIUM_URL=http://localhost:4444 vendor/bin/phpunit tests --verbose
+        run: composer run test
