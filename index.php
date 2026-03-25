@@ -1,6 +1,6 @@
 <?php echo 'yes we did'; ?>
 <?php
-require __DIR__ . "/src/Newsletter.php";
+require __DIR__ . "/src/newsletter.php";
 
 $message = "";
 
