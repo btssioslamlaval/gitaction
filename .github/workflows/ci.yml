@@ -8,13 +8,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      selenium:
-        image: selenium/standalone-chrome
-        ports:
-          - 4444:4444
-        options: --shm-size=2gb
-
     steps:
       - uses: actions/checkout@v4
 
@@ -27,34 +20,19 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Lancer le serveur PHP
-        run: php -S 127.0.0.1:8000 -t . > /dev/null 2>&1 &
+        run: php -S 0.0.0.0:8000 -t . > /dev/null 2>&1 &
 
-      - name: Attendre Selenium (max 60s)
+      # ✅ Démarre Chrome + Selenium directement sur la machine, sans Docker
+      - name: Démarrer ChromeDriver
         run: |
-          echo "Attente de Selenium sur le port 4444..."
-          for i in $(seq 1 30); do
-            if curl -s http://localhost:4444 > /dev/null 2>&1; then
-              echo "✅ Selenium répond !"
-              break
-            fi
-            echo "⏳ Tentative $i/30..."
-            sleep 2
-          done
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1)
+          echo "Version Chrome : $CHROME_VERSION"
+          chromedriver --port=4444 --whitelisted-ips='' &
+          sleep 3
+          echo "✅ ChromeDriver démarré"
 
-      - name: 🔍 Vérifier que le port 4444 est ouvert
-        run: |
-          echo "--- Ports ouverts ---"
-          ss -tlnp | grep 4444 || echo "❌ Port 4444 non trouvé !"
-
-      - name: 🔍 Vérifier la réponse de Selenium
-        run: |
-          echo "--- Réponse HTTP de Selenium ---"
-          curl -v http://localhost:4444 2>&1 || echo "❌ Pas de réponse"
-
-      - name: 🔍 Vérifier les conteneurs Docker actifs
-        run: |
-          echo "--- Conteneurs en cours ---"
-          docker ps
+      - name: 🔍 Vérifier ChromeDriver
+        run: curl -s http://localhost:4444/status
 
       - name: Lancer les tests
         run: composer run test
