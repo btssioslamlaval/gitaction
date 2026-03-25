@@ -11,19 +11,21 @@ final class FunctionalNewsletterTest extends TestCase
     protected function setUp(): void
     {
         $this->driver = RemoteWebDriver::create(
-            'http://selenuim:4444/wd/hub',
+            'http://localhost:4444',
             DesiredCapabilities::chrome()
         );
     }
 
     protected function tearDown(): void
     {
-        $this->driver->quit();
+        if ($this->driver) {
+            $this->driver->quit();
+        }
     }
 
-    public function testNewsletterAcceptsAdultWithValidEmail()
+    public function testNewsletterAcceptsAdultWithValidEmail(): void
     {
-        $this->driver->get("http://localhost:8000");
+        $this->driver->get("http://host.docker.internal:8000");
 
         $this->driver->findElement(WebDriverBy::id('age'))->sendKeys("20");
         $this->driver->findElement(WebDriverBy::id('email'))->sendKeys("test@test.com");
