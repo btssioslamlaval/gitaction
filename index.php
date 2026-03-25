@@ -16,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 <form method="post">
-  <input id="age" name="age" type="number">
-  <input id="email" name="email" type="text">
+  <p><label>age : <input id="age" name="age" type="number"></label></p>
+  <p><label>email : <input id="email" name="email" type="text"></Label></p>
   <button id="btn" type="submit">Envoyer</button>
 </form>
 <p id="result"><?= htmlspecialchars($message) ?></p>
