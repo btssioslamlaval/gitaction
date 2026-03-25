@@ -1,1 +1,1 @@
-{"version":2,"defects":[],"times":{"NewsletterTest::testAdult":0.006,"NewsletterTest::testEmail":0.001}}
+{"version":2,"defects":[],"times":{"NewsletterTest::testAdult":0.005,"NewsletterTest::testEmail":0.001}}
