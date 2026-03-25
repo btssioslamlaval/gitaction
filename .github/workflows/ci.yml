@@ -1,0 +1,36 @@
+name: Test Selenium
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome
+        ports:
+          - 4444:4444
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Installer dépendances
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Lancer le serveur PHP
+        run: php -S 127.0.0.1:8000 -t . > /dev/null 2>&1 &
+
+      - name: Attendre le démarrage
+        run: sleep 10
+
+      - name: Lancer les tests
+        run: composer run test
