@@ -11,7 +11,7 @@
     "files": ["src/newsletter.php"]
   },
   "scripts": {
-  "test": "php vendor/bin/phpunit --testdox"
+  "test": "php vendor/bin/phpunit tests"
   }
   
 }

@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-require __DIR__ . "/../src/newsletter.php";
+//require __DIR__ . "/../src/newsletter.php";
 
 final class NewsletterTest extends TestCase
 {
