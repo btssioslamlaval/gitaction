@@ -18,17 +18,11 @@ jobs:
         with:
           php-version: '8.2'
 
-      - name: Vérifier la version PHP
-        run: php -v
-
-      - name: Lancer index.php (CLI)
-        run: php index.php
-    
       - name: Installer dépendances
         run: composer install --no-interaction --prefer-dist
 
-      - name: Fix permissions
-        run: chmod -R +x vendor/bin
+      - name: Debug arborescence
+        run: ls -R
 
-      - name: Lancer les tests
-        run: composer run test
+      - name: Lancer PHPUnit directement
+        run: php vendor/bin/phpunit --testdox --display-errors
