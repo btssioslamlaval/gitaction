@@ -1,4 +1,4 @@
-name: Test Selenium
+name: CI PHP
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
 
     services:
@@ -14,6 +14,11 @@ jobs:
         image: selenium/standalone-chrome
         ports:
           - 4444:4444
+        options: >-
+          --health-cmd="curl -f http://localhost:4444/status || exit 1"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
 
     steps:
       - uses: actions/checkout@v4
@@ -26,11 +31,24 @@ jobs:
       - name: Installer dépendances
         run: composer install --no-interaction --prefer-dist
 
-      - name: Lancer le serveur PHP
-        run: php -S 127.0.0.1:8000 -t . > /dev/null 2>&1 &
+      - name: Vérifier Selenium
+        run: |
+          curl -fsS http://127.0.0.1:4444/status
+          curl -fsS http://127.0.0.1:4444/status | jq .
 
-      - name: Attendre le démarrage
-        run: sleep 10
+      - name: Lancer le serveur PHP
+        run: php -S 0.0.0.0:8000 -t . > /dev/null 2>&1 &
+
+      - name: Vérifier le serveur PHP
+        run: |
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:8000 && exit 0
+            sleep 1
+          done
+          exit 1
 
       - name: Lancer les tests
         run: composer run test
+        env:
+          SELENIUM_URL: http://127.0.0.1:4444
+          APP_URL: http://127.0.0.1:8000
